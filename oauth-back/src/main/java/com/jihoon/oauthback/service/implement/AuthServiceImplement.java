@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import com.jihoon.oauthback.dto.request.auth.SignUpRequestDto;
 import com.jihoon.oauthback.dto.response.ResponseDto;
 import com.jihoon.oauthback.dto.response.auth.SignUpResponseDto;
+import com.jihoon.oauthback.entity.UserEntity;
 import com.jihoon.oauthback.repository.UserRepository;
 import com.jihoon.oauthback.service.AuthService;
 
@@ -27,7 +28,8 @@ public class AuthServiceImplement implements AuthService {
       boolean hasId = userRepository.existsById(id);
       if (hasId) return SignUpResponseDto.existedId();
 
-      
+      UserEntity userEntity = new UserEntity(dto);
+      userRepository.save(userEntity);
 
     } catch(Exception exception) {
       exception.printStackTrace();
