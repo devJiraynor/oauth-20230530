@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -18,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 public class WebSecurityConfig {
 
   private final JwtAuthenticationFilter jwtAuthenticationFilter;
+  private final DefaultOAuth2UserService oAuth2UserService;
 
   @Bean
   protected SecurityFilterChain configure(HttpSecurity httpSecurity) throws Exception {
@@ -29,7 +31,10 @@ public class WebSecurityConfig {
       .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
       .authorizeRequests()
       .antMatchers("/", "/auth/**", "/oauth2/**").permitAll()
-      .anyRequest().authenticated();
+      .anyRequest().authenticated().and()
+      .oauth2Login()
+      .redirectionEndpoint().baseUri("/oauth2/callback/*").and()
+      .userInfoEndpoint().userService(oAuth2UserService);
 
     httpSecurity.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
