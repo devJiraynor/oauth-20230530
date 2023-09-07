@@ -1,9 +1,17 @@
 import React from 'react';
 import './App.css';
+import { Routes, Route } from 'react-router-dom';
+import Main from 'views/Main';
+import Login from 'views/Login';
+import Oauth from 'views/Oauth';
 
 function App() {
   return (
-    <h1>OAuth 2.0</h1>
+    <Routes>
+      <Route path='/' element={<Main />} />
+      <Route path='/login' element={<Login />} />
+      <Route path='/oauth2/:token' element={<Oauth />} />
+    </Routes>
   );
 }
 
