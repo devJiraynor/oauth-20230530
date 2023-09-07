@@ -7,14 +7,20 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jihoon.oauthback.entity.ApplicationOAuth2User;
+import com.jihoon.oauthback.entity.UserEntity;
+import com.jihoon.oauthback.repository.UserRepository;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class OAuth2UserServiceImplement extends DefaultOAuth2UserService {
+
+  private final UserRepository userRepository;
   
   @Override
   public OAuth2User loadUser(OAuth2UserRequest request) throws OAuth2AuthenticationException {
-
-    System.out.println(request.getClientRegistration().getRegistrationId());
 
     OAuth2User oAuth2User = super.loadUser(request);
 
@@ -27,10 +33,13 @@ public class OAuth2UserServiceImplement extends DefaultOAuth2UserService {
     String id = (String) oAuth2User.getAttributes().get("login");
     String profileImage = (String) oAuth2User.getAttributes().get("avatar_url");
 
-    System.out.println(id);
-    System.out.println(profileImage);
+    boolean existedId = userRepository.existsById(id);
+    if (!existedId) {
+      UserEntity userEntity = new UserEntity(id, profileImage);
+      userRepository.save(userEntity);
+    }
     
-    return oAuth2User;
+    return new ApplicationOAuth2User(id, oAuth2User.getAttributes());
 
   }
 
